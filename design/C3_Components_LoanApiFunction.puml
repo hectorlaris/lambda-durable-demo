@@ -1,0 +1,21 @@
+@startuml C3_Components
+title Loan Approval Workflow - C3 Components (LoanApiFunction)
+skinparam shadowing false
+package "LoanApiFunction [src/api.py]" {
+  rectangle "lambda_handler\n[Entry Point]\n@capture_lambda_handler\n@inject_lambda_context\n@log_metrics" as Handler
+  rectangle "POST /apply\napply()\nValida campos | Genera application_id\nCrea registro DynamoDB\nInvoca WorkflowFunction async" as Apply
+  rectangle "GET /status/<applicationId>\nstatus()\nLee DynamoDB\nRetorna progreso y logs" as Status
+  rectangle "POST /approve/<applicationId>\napprove()\nLee callback_id\nSend durable callback\nLimpia callback_id" as Approve
+  rectangle "APIGatewayHttpResolver [PowerTools]" as Router
+}
+database "LoanProgressTable [DynamoDB]" as DDB
+rectangle "LoanWorkflowFunction [Lambda]" as WorkflowFn
+Handler --> Router : "app.resolve()"
+Router --> Apply : "POST /apply"
+Router --> Status : "GET /status/{id}"
+Router --> Approve : "POST /approve/{id}"
+Apply --> DDB : "put_item"
+Apply --> WorkflowFn : "invoke async"
+Status --> DDB : "get_item"
+Approve --> DDB : "get_item + update_item"
+@enduml

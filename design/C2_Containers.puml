@@ -1,0 +1,24 @@
+@startuml C2_Containers
+title Loan Approval Workflow - C2 Container Diagram
+skinparam shadowing false
+left to right direction
+actor "Solicitante" as Applicant
+actor "Manager" as Manager
+package "AWS SAM Stack: loan-app-v1 [us-east-2]" {
+  rectangle "Frontend\nVite + React [SPA]" as Frontend
+  rectangle "LoanApi\n[API Gateway HttpApi]\nPOST /apply\nGET /status/{applicationId}\nPOST /approve/{applicationId}" as ApiGW
+  rectangle "LoanApiFunction\n[Lambda Python 3.13]\napi.lambda_handler" as ApiLambda
+  rectangle "LoanWorkflowFunction\n[Lambda Python 3.13]\nloan_demo.lambda_handler\nTimeout:300s | Alias:live" as WorkflowLambda
+  rectangle "FraudCheckFunction\n[Lambda Python 3.13]\nfraud_check.lambda_handler\nTimeout:30s" as FraudLambda
+  database "LoanProgressTable\n[DynamoDB]\nloan-progress-v1\nPK: application_id" as DynamoDB
+}
+Applicant --> Frontend
+Manager --> Frontend
+Frontend --> ApiGW : "HTTPS"
+ApiGW --> ApiLambda : "invoke"
+ApiLambda --> DynamoDB : "PutItem/GetItem/UpdateItem"
+ApiLambda --> WorkflowLambda : "InvokeFunction async"
+WorkflowLambda --> DynamoDB : "UpdateItem (steps)"
+WorkflowLambda --> FraudLambda : "InvokeFunction + callback_id"
+FraudLambda --> WorkflowLambda : "send_durable_execution_callback_success"
+@enduml

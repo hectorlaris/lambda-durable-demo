@@ -1,0 +1,34 @@
+{
+  "name": "loan-approval-workflow",
+  "version": "1.0.0",
+  "description": "A loan approval workflow using AWS Lambda, DynamoDB, and a frontend API layer.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "deploy": "sam deploy",
+    "start": "sam local start-api"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1000.0",
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.0",
+    "jest": "^27.0.0",
+    "@types/jest": "^27.0.0",
+    "@types/express": "^4.17.13",
+    "ts-jest": "^27.0.0"
+  },
+  "keywords": [
+    "AWS",
+    "Lambda",
+    "DynamoDB",
+    "Loan",
+    "Approval",
+    "Workflow"
+  ],
+  "author": "RDarrylR",
+  "license": "MIT"
+}

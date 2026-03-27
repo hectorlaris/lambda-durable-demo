@@ -1,0 +1,64 @@
+' filepath: d:\HandsOn AWS\Loan Approval Workflow\lambda-durable-demo\design\C4_Code_LoanWorkflow.puml
+@startuml C4_Code
+allowmixing
+title Loan Approval Workflow - C4 Code (loan_demo.py + fraud_check.py)
+skinparam shadowing false
+
+package "src/loan_demo.py" {
+  class lambda_handler {
+    +event: dict
+    +context: LambdaContext
+    --
+    1: update_progress(processing)
+    2: update_progress(fraud_check_pending)
+    3: update_progress(fraud_check_complete)
+    4: update_progress(credit_decision)
+    5: set_result(approved|rejected)
+  }
+  class update_progress {
+    +application_id: str
+    +step: str
+    +message: str
+    +status: str
+    --
+    list_append(logs)
+    UpdateItem DynamoDB
+  }
+  class set_result {
+    +application_id: str
+    +result: dict
+    +final_status: str
+    --
+    UpdateItem result+status
+    step = completed
+  }
+  class ScenariosSSN {
+    1111 => APPROVED
+    2222 => REJECTED
+    3333 => amount<=25000
+    default => APPROVED
+  }
+}
+
+package "src/fraud_check.py" {
+  class FraudHandler {
+    +callback_id: str
+    +application_id: str
+    --
+    time.sleep(5)
+    fraud_check = passed
+    send_durable_callback_success()
+  }
+}
+
+database "LoanProgressTable\n[DynamoDB]" as DDB
+
+lambda_handler --> update_progress
+lambda_handler --> set_result
+lambda_handler --> ScenariosSSN
+lambda_handler --> FraudHandler : "invoke + callback_id"
+FraudHandler --> lambda_handler : "durable callback"
+update_progress --> DDB
+set_result --> DDB
+
+@enduml

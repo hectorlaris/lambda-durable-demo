@@ -1,0 +1,12 @@
+@startuml C1_Context
+title Loan Approval Workflow - C1 System Context
+skinparam shadowing false
+left to right direction
+actor "Solicitante" as Applicant
+actor "Manager" as Manager
+rectangle "Loan Approval Workflow\n[AWS SAM: loan-app-v1 / us-east-2]" as LoanSystem
+rectangle "FraudCheck Externo (Simulado)" as FraudExt
+Applicant --> LoanSystem : "POST /apply | GET /status/{id}"
+Manager --> LoanSystem : "POST /approve/{id}"
+LoanSystem --> FraudExt : "Lambda Callback"
+@enduml
