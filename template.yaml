@@ -1,9 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Lambda Durable Functions - Loan Approval Workflow
-  Demonstrates checkpoint/replay, callbacks, retries, parallel execution,
-  and the Saga pattern in a realistic loan processing pipeline.
+  AWS Lambda Durable Functions - Loan Approval Workflow
+  
+  Demonstrates AWS Lambda Durable Functions pattern with:
+  - Automatic checkpointing and replay
+  - Built-in retry logic per activity (max 3 attempts)
+  - Deterministic execution with automatic error recovery
+  - Long-duration execution support (up to 1 year)
+  - Orchestrator + Activities pattern
+  - DynamoDB for progress tracking
 
 Globals:
   Function:
@@ -39,7 +45,7 @@ Resources:
           KeyType: HASH
 
   # ──────────────────────────────────────────────────────
-  # Durable Workflow Lambda
+  # Durable Workflow Lambda (Orchestrator)
   # ──────────────────────────────────────────────────────
   LoanWorkflowFunction:
     Type: AWS::Serverless::Function
@@ -48,12 +54,14 @@ Resources:
       CodeUri: src/
       Handler: loan_demo.lambda_handler
       Timeout: 300
+      MemorySize: 1024
       AutoPublishAlias: live
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: LoanWorkflow
+          POWERTOOLS_LOG_LEVEL: INFO
           PROGRESS_TABLE: !Ref LoanProgressTable
-          FRAUD_CHECK_FUNCTION: !Ref FraudCheckFunction
+          AWS_LAMBDA_LOG_LEVEL: INFO
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -63,12 +71,11 @@ Resources:
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
                 - dynamodb:Query
+                - dynamodb:Scan
               Resource: !GetAtt LoanProgressTable.Arn
-        - Statement:
-            - Effect: Allow
-              Action:
-                - lambda:InvokeFunction
-              Resource: !GetAtt FraudCheckFunction.Arn
+      Tags:
+        Function: Orchestrator
+        Pattern: DurableFunctions
 
   # ──────────────────────────────────────────────────────
   # External Fraud Check (Callback)

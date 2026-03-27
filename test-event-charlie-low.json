@@ -1,0 +1,8 @@
+{
+    "application_id": "test-charlie-low-001",
+    "applicant_name": "Charlie Davis",
+    "ssn_last4": "3333",
+    "loan_amount": 20000,
+    "employment_years": 5,
+    "annual_income": 55000
+}

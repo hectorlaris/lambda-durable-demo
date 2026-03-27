@@ -1,0 +1,8 @@
+{
+    "application_id": "test-default-001",
+    "applicant_name": "David Wilson",
+    "ssn_last4": "9999",
+    "loan_amount": 75000,
+    "employment_years": 10,
+    "annual_income": 120000
+}

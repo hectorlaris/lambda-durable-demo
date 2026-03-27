@@ -1,0 +1,8 @@
+{
+    "application_id": "test-alice-001",
+    "applicant_name": "Alice Johnson",
+    "ssn_last4": "1111",
+    "loan_amount": 50000,
+    "employment_years": 8,
+    "annual_income": 85000
+}

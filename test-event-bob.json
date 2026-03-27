@@ -1,0 +1,8 @@
+{
+    "application_id": "test-bob-001",
+    "applicant_name": "Bob Smith",
+    "ssn_last4": "2222",
+    "loan_amount": 50000,
+    "employment_years": 3,
+    "annual_income": 45000
+}
