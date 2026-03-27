@@ -1,8 +1,0 @@
-[default]
-stack_name = "loan-approval-workflow"
-s3_bucket = "your-s3-bucket-name"
-s3_prefix = "loan-approval-workflow"
-region = "us-east-1"
-confirm_changeset = true
-capabilities = "CAPABILITY_IAM"
-parameter_overrides = "ParameterKey=Environment,ParameterValue=dev"
