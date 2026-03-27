@@ -29,7 +29,7 @@ Resources:
   LoanProgressTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "${AWS::StackName}-progress"
+      TableName: loan-progress-v1
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: application_id
@@ -49,9 +49,6 @@ Resources:
       Handler: loan_demo.lambda_handler
       Timeout: 300
       AutoPublishAlias: live
-      DurableConfig:
-        ExecutionTimeout: 300           # 5 minutes
-        RetentionPeriodInDays: 3
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: LoanWorkflow
@@ -62,13 +59,11 @@ Resources:
         - Statement:
             - Effect: Allow
               Action:
-                - lambda:CheckpointDurableExecution
-                - lambda:GetDurableExecutionState
-                - lambda:GetDurableExecution
-                - lambda:ListDurableExecutions
-              Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LoanWorkflowFunction*"
-        - DynamoDBCrudPolicy:
-            TableName: !Ref LoanProgressTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Query
+              Resource: !GetAtt LoanProgressTable.Arn
         - Statement:
             - Effect: Allow
               Action:
@@ -88,14 +83,9 @@ Resources:
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: FraudCheck
-          WORKFLOW_FUNCTION_NAME: !Sub "LoanWorkflowFunction:live"
+          WORKFLOW_FUNCTION_NAME: LoanWorkflowFunction
       Policies:
         - AWSLambdaBasicExecutionRole
-        - Statement:
-            - Effect: Allow
-              Action:
-                - lambda:SendDurableExecutionCallbackSuccess
-              Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LoanWorkflowFunction*"
 
   # ──────────────────────────────────────────────────────
   # API Lambda + API Gateway
@@ -127,7 +117,7 @@ Resources:
         Variables:
           POWERTOOLS_SERVICE_NAME: LoanApi
           PROGRESS_TABLE: !Ref LoanProgressTable
-          LOAN_FUNCTION_NAME: !Ref LoanWorkflowFunctionAliaslive
+          LOAN_FUNCTION_NAME: LoanWorkflowFunction
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
@@ -136,7 +126,6 @@ Resources:
             - Effect: Allow
               Action:
                 - lambda:InvokeFunction
-                - lambda:SendDurableExecutionCallbackSuccess
               Resource:
                 - !GetAtt LoanWorkflowFunction.Arn
                 - !Sub "${LoanWorkflowFunction.Arn}:*"

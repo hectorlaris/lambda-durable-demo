@@ -1,0 +1,167 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudFormationPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:UpdateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks",
+                "cloudformation:DescribeStackEvents",
+                "cloudformation:DescribeStackResource",
+                "cloudformation:DescribeStackResources",
+                "cloudformation:GetTemplate",
+                "cloudformation:ListStacks",
+                "cloudformation:ListStackResources",
+                "cloudformation:ValidateTemplate"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "LambdaPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "lambda:GetFunction",
+                "lambda:ListFunctions",
+                "lambda:InvokeFunction",
+                "lambda:CreateAlias",
+                "lambda:UpdateAlias",
+                "lambda:DeleteAlias",
+                "lambda:GetAlias",
+                "lambda:ListAliases",
+                "lambda:PublishVersion",
+                "lambda:GetPolicy",
+                "lambda:AddPermission",
+                "lambda:RemovePermission",
+                "lambda:TagResource",
+                "lambda:UntagResource",
+                "lambda:ListTags"
+            ],
+            "Resource": "arn:aws:lambda:*:*:function/*"
+        },
+        {
+            "Sid": "DynamoDBPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:UpdateTable",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeStream",
+                "dynamodb:ListTables",
+                "dynamodb:ListStreams",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource",
+                "dynamodb:ListTagsOfResource"
+            ],
+            "Resource": "arn:aws:dynamodb:*:*:table/*"
+        },
+        {
+            "Sid": "APIGatewayPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:*",
+                "apigatewayv2:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "IAMRolePermissions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole",
+                "iam:UpdateRole",
+                "iam:DeleteRole",
+                "iam:GetRole",
+                "iam:PassRole",
+                "iam:CreatePolicy",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:GetRolePolicy",
+                "iam:ListRelatedPolicies",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRolePolicies",
+                "iam:TagRole",
+                "iam:UntagRole",
+                "iam:ListRoleTags"
+            ],
+            "Resource": "arn:aws:iam::*:role/*"
+        },
+        {
+            "Sid": "CloudWatchLogsPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:DeleteLogGroup",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:CreateLogStream",
+                "logs:DeleteLogStream",
+                "logs:PutRetentionPolicy",
+                "logs:TagLogGroup",
+                "logs:UntagLogGroup"
+            ],
+            "Resource": "arn:aws:logs:*:*:log-group:*"
+        },
+        {
+            "Sid": "XRayPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3PermissionsForSAM",
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:DeleteBucket",
+                "s3:GetBucketVersioning",
+                "s3:PutBucketVersioning",
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:PutBucketPolicy",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-sam-cli-*",
+                "arn:aws:s3:::aws-sam-cli-*/*"
+            ]
+        },
+        {
+            "Sid": "IAMPolicyPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy",
+                "iam:CreatePolicy",
+                "iam:DeletePolicy",
+                "iam:ListPolicies"
+            ],
+            "Resource": "arn:aws:iam::*:policy/*"
+        },
+        {
+            "Sid": "SSMParameterPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameter",
+                "ssm:PutParameter",
+                "ssm:DeleteParameter",
+                "ssm:DescribeParameters"
+            ],
+            "Resource": "arn:aws:ssm:*:*:parameter/*"
+        }
+    ]
+}

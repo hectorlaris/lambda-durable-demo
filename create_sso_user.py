@@ -13,7 +13,7 @@ session = boto3.Session(profile_name=args.profile, region_name=REGION)
 
 USER = {
     "UserName": "developer",
-    "DisplayName": "Developer Serrano",
+    "DisplayName": "Developer",
     "Emails": [{"Value": "hectorlaris.architect@gmail.com", "Type": "work", "Primary": True}],
     "Name": {"GivenName": "Developer", "FamilyName": "Serrano"},
 }

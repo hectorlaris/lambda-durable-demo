@@ -1,13 +1,14 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "loan-approval"
+stack_name = "loan-app-v1"
 resolve_s3 = true
-s3_prefix = "loan-approval"
-region = "us-east-1"
+s3_prefix = "loan-app-v1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
+profile = "developer"
+disable_rollback = true
 
 [default.global.parameters]
-region = "us-east-1"
+region = "us-east-2"

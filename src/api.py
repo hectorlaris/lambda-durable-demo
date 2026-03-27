@@ -119,13 +119,25 @@ def apply():
     }
 
     # Invoke loan workflow Lambda asynchronously
-    lambda_client.invoke(
-        FunctionName=LOAN_FUNCTION_NAME,
-        InvocationType="Event",
-        Payload=json.dumps(workflow_event),
-    )
-
-    logger.info("Application created and workflow invoked", application_id=application_id)
+    try:
+        response = lambda_client.invoke(
+            FunctionName=LOAN_FUNCTION_NAME,
+            InvocationType="Event",
+            Payload=json.dumps(workflow_event),
+        )
+        logger.info(
+            "Application created and workflow invoked",
+            application_id=application_id,
+            invoke_response_status=response.get("StatusCode"),
+        )
+    except Exception as e:
+        logger.error(
+            "Failed to invoke workflow function",
+            application_id=application_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
+        raise
     metrics.add_metric(name="ApplicationsSubmitted", unit=MetricUnit.Count, value=1)
 
     return {"application_id": application_id}
