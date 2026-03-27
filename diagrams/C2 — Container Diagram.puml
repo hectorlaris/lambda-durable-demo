@@ -1,0 +1,39 @@
+@startuml C2_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Loan Approval Workflow - C2 Containers
+
+Person(applicant, "Solicitante")
+Person(analyst, "Analista de Riesgo")
+System_Ext(creditBureau, "Buró de Crédito")
+
+System_Boundary(loanSys, "Loan Approval Workflow") {
+  Container(api, "API Gateway", "AWS API Gateway", "Exposición de endpoints")
+  Container(orchestrator, "Approval Orchestrator", "AWS Step Functions", "Flujo durable de aprobación")
+  Container(lambdaIngest, "Ingest Lambda", "AWS Lambda", "Valida y normaliza solicitud")
+  Container(lambdaDecision, "Decision Lambda", "AWS Lambda", "Reglas de negocio y decisión")
+  Container(lambdaManual, "Manual Review Lambda", "AWS Lambda", "Gestiona revisión humana")
+  ContainerDb(db, "Loan Data", "Amazon DynamoDB", "Solicitudes, estados, auditoría")
+  Container(queue, "Review Queue", "Amazon SQS", "Cola de casos manuales")
+  Container(notify, "Notifications", "Amazon SNS", "Notificaciones de estado")
+}
+
+Rel(applicant, api, "POST /loan, GET /loan/{id}", "HTTPS")
+Rel(analyst, api, "POST /loan/{id}/review", "HTTPS")
+
+Rel(api, lambdaIngest, "Invoca")
+Rel(lambdaIngest, db, "Crea solicitud")
+Rel(lambdaIngest, orchestrator, "Inicia ejecución")
+
+Rel(orchestrator, lambdaDecision, "Evalúa solicitud")
+Rel(lambdaDecision, creditBureau, "Consulta score")
+Rel(lambdaDecision, db, "Actualiza estado")
+
+Rel(orchestrator, queue, "Encola revisión manual (si aplica)")
+Rel(queue, lambdaManual, "Dispara revisión")
+Rel(lambdaManual, db, "Actualiza decisión final")
+
+Rel(orchestrator, notify, "Publica eventos")
+Rel(notify, applicant, "Notifica resultado", "Email/SMS")
+
+@enduml
